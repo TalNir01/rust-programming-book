@@ -1,0 +1,75 @@
+# Run `pre-commit install` once per clone to enable these hooks.
+# Update pinned revisions with `pre-commit autoupdate`.
+minimum_pre_commit_version: "3.5.0"
+default_install_hook_types: [pre-commit, commit-msg]
+
+exclude: "^(target/|.*/target/)"
+
+repos:
+  # ---------------------------------------------------------------- hygiene
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+        args: [--fix=lf]
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: [--maxkb=1024]
+      - id: check-yaml
+      - id: check-toml
+      - id: check-case-conflict
+
+  # ---------------------------------------------------------------- markdown
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.45.0
+    hooks:
+      - id: markdownlint
+        args: [--fix]
+
+  # ---------------------------------------------------------------- spelling
+  - repo: https://github.com/crate-ci/typos
+    rev: v1.34.0
+    hooks:
+      - id: typos
+        args: [] # empty = report only, never auto-correct
+
+  # ---------------------------------------------------------------- rust
+  # Local hooks so they use this clone's toolchain (rust-toolchain.toml aware)
+  # instead of whatever a mirrored hook repo pins.
+  - repo: local
+    hooks:
+      - id: cargo-fmt
+        name: cargo fmt
+        description: Format Rust sources in every crate in the repo.
+        entry: scripts/cargo-all.sh fmt --all
+        language: system
+        types: [rust]
+        pass_filenames: false
+
+      - id: cargo-check
+        name: cargo check
+        description: Type-check every crate (fast failure before clippy).
+        entry: scripts/cargo-all.sh check --all-targets
+        language: system
+        types: [rust]
+        pass_filenames: false
+
+      - id: cargo-clippy
+        name: cargo clippy
+        description: Lint every crate, warnings are errors.
+        entry: scripts/cargo-all.sh clippy --all-targets --all-features -- -D warnings
+        language: system
+        types: [rust]
+        pass_filenames: false
+
+      - id: cargo-test
+        name: cargo test
+        description: Run the test suite of every crate.
+        entry: scripts/cargo-all.sh test --all-targets
+        language: system
+        types: [rust]
+        pass_filenames: false
+        stages: [pre-push] # too slow for every commit; runs on push

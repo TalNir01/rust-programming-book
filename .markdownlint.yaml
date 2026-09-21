@@ -1,0 +1,6 @@
+# Prose is wrapped by the author, not by a column limit.
+MD013: false
+# Allow inline HTML (badges, <details> blocks) in READMEs.
+MD033: false
+# The first line of a file need not be a top-level heading.
+MD041: false
