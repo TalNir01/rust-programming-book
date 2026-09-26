@@ -2,6 +2,7 @@ use rand::RngExt;
 use std::cmp::Ordering;
 use std::fmt;
 use std::io::{self, Write};
+/// Constants
 const DEFAULT_MAX_GUESS: u32 = 100;
 const MAX_GUESS: u32 = match option_env!("MAX_GUESS") {
     None => DEFAULT_MAX_GUESS,
