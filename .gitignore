@@ -1,3 +1,6 @@
 target/*
 */target/*
 *pycache*
+*.calude*
+.claude/*
+*/.claude/*
